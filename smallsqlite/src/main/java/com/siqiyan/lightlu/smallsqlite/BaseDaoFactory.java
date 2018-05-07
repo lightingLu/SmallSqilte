@@ -1,5 +1,8 @@
 package com.siqiyan.lightlu.smallsqlite;
 
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
+
 /**
  * 创建日期：2018/5/7 on 22:02
  *
@@ -10,6 +13,42 @@ package com.siqiyan.lightlu.smallsqlite;
 
 public class BaseDaoFactory {
     private String sqlliteDataBasePath;
+    private SQLiteDatabase sqLiteDatabase;
+
+    private static BaseDaoFactory instance=new BaseDaoFactory();
+    public BaseDaoFactory() {
+
+        this.sqlliteDataBasePath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/teacher.db";
+        openDbHelper();
+
+    }
+
+    public  synchronized  <T extends  BaseDao<M>,M> T getDataHelper(Class<T> clazz,Class<M> entityClass)
+    {
+        BaseDao baseDao=null;
+        try {
+            baseDao=clazz.newInstance();
+            baseDao.init(entityClass,sqLiteDatabase);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return (T) baseDao;
+    }
+
+
+
+
+    private void openDbHelper() {
+      this.sqLiteDatabase=SQLiteDatabase.openOrCreateDatabase(sqlliteDataBasePath,null );
+    }
+
+    public BaseDaoFactory getInstance(){
+        return instance;
+    }
+
 
 
 
