@@ -1,5 +1,6 @@
 package com.siqiyan.lightlu.smallsqlite;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
@@ -9,6 +10,9 @@ import com.siqiyan.lightlu.smallsqlite.annotion.DbTable;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 创建日期：2018/5/7 on 22:02
@@ -128,9 +132,59 @@ public abstract class BaseDao<T> implements IBaseDao<T> {
 
     @Override
     public long insert(T entity) {
+        Map<String, String> map = getValues(entity);
+        ContentValues values=getContentValues(map);
+        long insert = database.insert(tableName, null, values);
 
+        return insert;
+    }
 
-        return ;
+    private ContentValues getContentValues(Map<String, String> map) {
+        ContentValues values =new ContentValues();
+        Set<String> keys = map.keySet();
+        Iterator<String> iterator = keys.iterator();
+        while (iterator.hasNext()){
+            String key = iterator.next();
+            String value = map.get(key);
+            if (TextUtils.isEmpty(value)){
+            values.put(key,value);
+            }
+        }
+        return  values;
+    }
+
+    /**
+     * 获取类的值
+     *
+     * @param entity
+     * @return
+     */
+    private Map<String, String> getValues(T entity) {
+        Map<String, String> result = new HashMap<>();
+        Iterator<Field> iterator = cacheMap.values().iterator();
+        while (iterator.hasNext()) {
+            Field colmunToFiled = iterator.next();
+            String cacheKey=null;
+            String cacheValue=null;
+            if(colmunToFiled.getAnnotation(DbField.class)!=null) {
+                cacheKey=colmunToFiled.getAnnotation(DbField.class).value();
+            }else {
+                cacheKey=colmunToFiled.getName();
+            }
+            try {
+                if (colmunToFiled.get(entity)==null){
+                    continue;
+                }
+
+                cacheValue=colmunToFiled.get(entity).toString();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            result.put(cacheKey,cacheValue);
+
+        }
+        return result;
+
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  *          类说明：
  */
 
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DbTable {
     String value();
