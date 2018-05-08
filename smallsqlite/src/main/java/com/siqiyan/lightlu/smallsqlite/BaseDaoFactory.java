@@ -17,8 +17,7 @@ public class BaseDaoFactory {
 
     private static BaseDaoFactory instance=new BaseDaoFactory();
     public BaseDaoFactory() {
-
-        this.sqlliteDataBasePath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/teacher.db";
+        sqlliteDataBasePath= Environment.getExternalStorageDirectory().getAbsolutePath()+"/teacher.db";
         openDbHelper();
 
     }
@@ -48,7 +47,6 @@ public class BaseDaoFactory {
     public static BaseDaoFactory getInstance(){
         return instance;
     }
-
 
 
 
